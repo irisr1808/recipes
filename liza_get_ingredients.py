@@ -47,6 +47,7 @@ for row in records:
                 text_in = text_in.replace('\n', '')
                 text_in = text_in.replace("'", '')
                 text_in = text_in.strip()
+                text_in = text_in.replace('&nbsp', '')
                 counter += 1
                 if text_in == 'מה צריכים:' or text_in == 'לעוגה:':
                     ingredients_start = counter + 1
@@ -68,19 +69,28 @@ for row in records:
                 try:
                     if ingredients_start < counter < instruction_start:
                         print('ingredients ' + text_in)
+                        if counter < 10:
+                            middle = '-00'
+                        else:
+                            middle = '-0'
+                        ingredient_no = str(row_id) + middle + str(counter)
                         with sqlite3.connect('Recipes_data.db') as conn_d:
                             cursor = conn_d.cursor()
-                            cursor.execute(f"""INSERT  INTO ingredients
-                                            VALUES ('{row_id}', '{url}', '{text_in}')
+                            cursor.execute(f"""INSERT OR IGNORE INTO ingredients
+                                            VALUES ('{row_id}', '{ingredient_no}', '{text_in}')
                                              """)
                     if counter >= instruction_start:
                         print('instructions ' + text_in)
                         step_no = text_in.split('.')[0]
                         step_instruction = text_in.split('.')[1][1:]
+                        if counter-instruction_start < 10:
+                            middle = '-00'
+                        else:
+                            middle = '-0'
                         with sqlite3.connect('Recipes_data.db') as conn_d:
                             cursor = conn_d.cursor()
-                            cursor.execute(f"""INSERT  INTO instructions
-                                        VALUES ('{row_id}', '{url}', '{step_no}' , '{step_instruction}')
+                            cursor.execute(f"""INSERT OR IGNORE  INTO instructions
+                                        VALUES ('{row_id}','{step_no}' , '{step_instruction}')
                                          """)
                 except NameError:
                     pass
