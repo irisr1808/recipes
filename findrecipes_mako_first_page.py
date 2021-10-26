@@ -31,7 +31,7 @@ for addresses in recipe_names:
     cursor = conn.cursor()
 # Insert address and recipe name into DB
 
-    cursor.execute("INSERT OR IGNORE INTO Address(id, site_name, recipe_address, recipe_name) VALUES(?,?,?,?)", (id_num, site_name, recipe_full_address, recipe_name) )
+    cursor.execute("INSERT OR IGNORE INTO Address(id, site_name, recipe_address, recipe_name) VALUES(?,?,?,?)", (id_num, site_name, recipe_full_address[1:-1], recipe_name) )
 # Commit your changes in the database
     conn.commit()
     # print('data inserted')

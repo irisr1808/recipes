@@ -35,6 +35,7 @@ def blogs_choose():
 
 
 def search_by_name():
+    # a function that search recipes from db by name
     search_name = input(
         '''Please enter what you are looking for
             For example type שוקולד if you want
@@ -51,6 +52,7 @@ def search_by_name():
 
 
 def search_with_ingredient():
+    # a function that search recipes from db by ingredient
     search_ingredient = input('''
     Please type the desired ingredient
     For example type חמאת בוטנים
@@ -69,54 +71,13 @@ def search_with_ingredient():
                                         '''
 
     all_rows = cursor.execute(sql_select_recipe_by_ingredient, [search_ingredient]).fetchall()
-    print('The recipes links and names that include ' + search_ingredient[1:-1] + ' are:')
+    # print('The recipes links and names that include ' + search_ingredient[1:-1] + ' are:')
     for row in all_rows:
         print('Link is ' + str(row[2]) + ' and recipe name is  ' + row[3])
 
 
 def search_with_without_ingredient():
-    search_ingredient = input('''
-    Please type the desired ingredient
-    For example type חמאת בוטנים
-    ''')
-    search_ingredient = '%' + search_ingredient + '%'
-    search_no_ingredient = input('''
-                            Please type the undesired ingredient
-                            For example type לימון
-                            ''')
-    search_no_ingredient = '%' + search_no_ingredient + '%'
-    sqlite_get_recipes_with_ingredient = '''SELECT  ingredients.recipe_id ,
-                                            Address.recipe_address
-                                            ,Address.recipe_short_name
-                                            FROM ingredients
-                                            INNER JOIN Address
-                                            ON ingredients.recipe_id = Address.id
-                                            WHERE ingredients.ingredient like ?
-                                            AND Address.id = ?
-                                                                            '''
-    sqlite_get_recipes_without_ingredient = '''SELECT   MIN(Address.id) 
-                                        ,MIN(ingredients.ingredient)
-                                        ,MIN(Address.recipe_address)
-                                        ,MIN(Address.recipe_short_name)
-                                        FROM ingredients
-                                        INNER JOIN Address
-                                        ON ingredients.recipe_id = Address.id
-                                        WHERE ingredients.ingredient NOT like ?
-                                        GROUP BY Address.id
-                                        '''
-
-    sql_get_all_recipe_id = ''' SELECT id from Address'''
-
-    all_rows = cursor.execute(sql_get_all_recipe_id).fetchall()
-    for row in all_rows:
-        count_with = cursor.execute(sqlite_get_recipes_with_ingredient, ([search_ingredient], [row])).fetchall()
-        count_without = cursor.execute(sqlite_get_recipes_without_ingredient, [search_no_ingredient]).fetchall()
-        print('count with = ' + str(count_with))
-        print('count without = ' + str(count_without))
-        print('wait')
-
-
-def search_with_without_list():
+    # a function that search recipes from db by included ingredient and excluded ingredient
     search_with = input(
         '''Please enter the desired ingredient
             For example type שוקולד              
@@ -132,7 +93,6 @@ def search_with_without_list():
     address_list = cursor.execute(sql_select_address).fetchall()
     ingredients_list = cursor.execute(sql_select_ingredients).fetchall()
 
-
     # find all address id with an ingredient
     # and put them in a list
     for recipe in ingredients_list:
@@ -145,7 +105,7 @@ def search_with_without_list():
             pass
     # remove duplicates from list
     list_id_with_ingredient = list(dict.fromkeys(list_id_with_ingredient))
-    print('list with - ' + search_with + str(list_id_with_ingredient) + 'len = ' + str(len(list_id_with_ingredient)))
+    # print('list with - ' + search_with + str(list_id_with_ingredient) + 'len = ' + str(len(list_id_with_ingredient)))
 
     # find all address id without an ingredient
     # and put them in a list
@@ -159,7 +119,7 @@ def search_with_without_list():
             pass
     # remove duplicates from list
     list_id_without_ingredient = list(dict.fromkeys(list_id_without_ingredient))
-    print('list without - ' + search_without + str(list_id_without_ingredient))
+    # print('list without - ' + search_without + str(list_id_without_ingredient))
     list_id_with_without_ingredient = list_id_with_ingredient.copy()
     for with_id in list_id_with_ingredient:
         for without_id in list_id_without_ingredient:
@@ -173,8 +133,28 @@ def search_with_without_list():
         for id_with_without in list_id_with_without_ingredient:
             if recipe[0] == id_with_without:
                 print(recipe[4] + ' - ' + recipe[2])
-# blogs_choose()
-# search_by_name()
-# search_with_ingredient()
-# search_with_without_ingredient()
-search_with_without_list()
+
+
+def main():
+    # a function to choose thr desired search
+    option = input('''
+                    To search recipes  by recipe name type 1
+                    To search recipes by specific ingredient type 2
+                    To search recipes by specific ingredient included 
+                        and specific ingredient excluded type 3  
+                    ''')
+    answers = ['1', '2', '3']
+    if option in answers:
+
+        if option == '1':
+            search_by_name()
+        elif option == '2':
+            search_with_ingredient()
+        elif option == '3':
+            search_with_without_ingredient()
+    else:
+        print('Please select 1 2 or 3')
+
+
+if __name__ == "__main__":
+    main()
