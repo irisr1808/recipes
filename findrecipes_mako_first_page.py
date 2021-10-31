@@ -21,9 +21,7 @@ for addresses in recipe_names:
     recipe_data = addresses.contents
     recipe_add_address = recipe_data[0].attrs['href']
     recipe_full_address = "'" + 'https://www.mako.co.il' + recipe_add_address + "'"
-    # print(recipe_name)
-    # print(recipe_add_address)
-    # print(recipe_full_address)
+
 # Connecting to sqlite
     conn = sqlite3.connect('Recipes_data.db')
 

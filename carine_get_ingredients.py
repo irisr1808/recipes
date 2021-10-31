@@ -7,6 +7,7 @@ sqliteConnection = sqlite3.connect('Recipes_data.db')
 cursor = sqliteConnection.cursor()
 autocommit = True
 
+# Find a list of all the recipes from carine site
 sqlite_select_query = """SELECT * from Address WHERE site_name = 'carine'"""
 cursor.execute(sqlite_select_query)
 records = cursor.fetchall()
@@ -16,8 +17,10 @@ headers = {
 for row in records:
     url = (row[2])
     row_id = row[0]
-    print(str(row_id))
+
     ingredient_no = 0
+
+    # Check there is a short recipe name
     try:
 
         f = requests.get(url, headers=headers)
@@ -28,8 +31,9 @@ for row in records:
         recipe_short_name = recipe_short_name.replace("!", "")
         recipe_short_name = recipe_short_name.strip('\n')
         recipe_short_name = recipe_short_name.strip('\t')
-        print(recipe_short_name)
+        # print(recipe_short_name)
 
+        # Update the recipe short name into the database
         with sqlite3.connect('Recipes_data.db') as conn_d:
             cursor = conn_d.cursor()
             cursor.execute(f"""UPDATE Address
@@ -37,6 +41,7 @@ for row in records:
                                 WHERE Address.id = '{row_id}'
                                 """)
 
+        # Insert all the ingredients into the database
         recipe_ingredients = soup.find_all(class_='ingredient-container')
         for Tag in recipe_ingredients:
             ingredient = Tag.text
@@ -51,8 +56,8 @@ for row in records:
                 ingredient_middle = '-0'
 
             ingredient_combine_no = str(row_id) + ingredient_middle + str(ingredient_no)
-            # ingredient = ingredient.replace('  ', ' ')
-            print(ingredient)
+
+            # Insert the ingredients with ingredient number
             with sqlite3.connect('Recipes_data.db') as conn_d:
                 cursor = conn_d.cursor()
                 cursor.execute(f"""INSERT OR IGNORE INTO ingredients

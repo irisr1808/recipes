@@ -7,7 +7,7 @@ conn = sqlite3.connect('Recipes_data.db')
 cursor = conn.cursor()
 id_num = cursor.execute("SELECT MAX(id) FROM Address").fetchall()[0][0] + 1
 
-# Reading all cakes and cookies recipes  in liza panelim
+# Reading all cakes and cookies recipes  in liza panelim site
 url_start = 'https://lizapanelim.com/category/%d7%9e%d7%a9%d7%95-%d7%9c%d7%a7%d7%99%d7%a0%d7%95%d7%97/'
 site_name = 'liza'
 recipe_owner = 'ליזה'
@@ -17,12 +17,10 @@ headers = {
 
 
 f = requests.get(url_start, headers=headers)
-# recipes_lst = []
 soup = BeautifulSoup(f.content, 'lxml')
-# recipe_names = soup.find('div', {'class': 'line-clamp'}).find_all('h5')
 recipe_names = soup.find_all(class_="elementor-post__title")
-# recipe_names_len = recipe_names.__len__
 
+# Cleaning the recipe name
 for recipe in recipe_names:
 
     recipe_name = recipe.text
@@ -32,6 +30,8 @@ for recipe in recipe_names:
     recipe_name = recipe_name.replace("'", "")
     recipe_name = recipe_name.rstrip()
     recipe_name = recipe_name.lstrip()
+
+    # Finding the recipe address
     recipe_full_address = recipe.contents[1].attrs
     recipe_full_address = recipe_full_address.get('href')
     print(str(id_num) + recipe_name)
@@ -48,5 +48,5 @@ for recipe in recipe_names:
     conn.commit()
     # print('data inserted')
     id_num += 1
-    # Closing the connection
-    # conn.close()
+# Closing the connection
+conn.close()

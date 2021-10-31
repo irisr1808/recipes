@@ -29,6 +29,7 @@ for row in records:
         recipe_short_name = recipe_short_name.strip('\t')
         print(recipe_short_name)
 
+        # Insert the recipe short name
         with sqlite3.connect('Recipes_data.db') as conn_d:
             cursor = conn_d.cursor()
             cursor.execute(f"""UPDATE Address
@@ -39,8 +40,8 @@ for row in records:
         tag_type = 'None'
         step_no = 1
         counter = 0
-        # recipe_ingredients = soup.find_all(class_="elementor-widget-container")
-        # recipe_ingredients = soup.find_all('br')
+
+        # Check if the ingredient line has data and clean it
         try:
             for tag in recipe_ingredients:
                 text_in = tag.next
@@ -58,8 +59,9 @@ for row in records:
         except TypeError:
             pass
         counter = 0
-        try:
 
+        # Check if the ingredient line has data and clean it
+        try:
             for tag in recipe_ingredients:
                 text_in = tag.next
                 text_in = text_in.replace('\n', '')
@@ -79,19 +81,7 @@ for row in records:
                             cursor.execute(f"""INSERT OR IGNORE INTO ingredients
                                             VALUES ('{row_id}', '{ingredient_no}', '{text_in}')
                                              """)
-                    if counter >= instruction_start:
-                        print('instructions ' + text_in)
-                        step_no = text_in.split('.')[0]
-                        step_instruction = text_in.split('.')[1][1:]
-                        if counter-instruction_start < 10:
-                            middle = '-00'
-                        else:
-                            middle = '-0'
-                        with sqlite3.connect('Recipes_data.db') as conn_d:
-                            cursor = conn_d.cursor()
-                            cursor.execute(f"""INSERT OR IGNORE  INTO instructions
-                                        VALUES ('{row_id}','{step_no}' , '{step_instruction}')
-                                         """)
+
                 except NameError:
                     pass
         except TypeError:
