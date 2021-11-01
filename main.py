@@ -1,6 +1,7 @@
 import sqlite3
 import re
 
+
 sqliteConnection = sqlite3.connect('Recipes_data.db')
 conn = sqlite3.connect(':memory:')
 sqliteConnection.backup(conn)
@@ -95,6 +96,7 @@ def search_with_without_ingredient():
         '''Please enter the un desired ingredient
             For example type חמאה              
             ''')
+    # Check if the ingredients name is a number
     num_format = re.compile(r'^\-?[1-9][0-9]*\.?[0-9]*')
     mo_with = num_format.search(search_with)
     mo_without = num_format.search(search_without)
@@ -150,7 +152,8 @@ def search_with_without_ingredient():
             for recipe in address_list:
                 for id_with_without in list_id_with_without_ingredient:
                     if recipe[0] == id_with_without:
-                        print(recipe[4] + ' - ' + recipe[2])
+                        print(recipe[4] + '\n' + 'Link is - ' + recipe[2] + '\n')
+
         else:
             print('There are no recipes with ' + search_with + ' and without ' + search_without)
 
